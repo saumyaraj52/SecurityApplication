@@ -39,7 +39,7 @@ public class AuthenticationService {
 		var jwtToken = this.jwtService.generateToken(user);
 		return AuthenticationResponse.builder().token(jwtToken).build();
 	}
-	public AuthenticationResponse authenticate(RegisterRequest request) {
+	public AuthenticationResponse authenticate(AuthenticationRequest request) {
 		// TODO Auto-generated method stub
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
