@@ -1,5 +1,6 @@
 package com.check.security.auth;
 
+import com.check.security.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,5 +1,6 @@
 package com.check.security.auth;
 
+import com.check.security.user.Role;
 import lombok.Builder;
 import lombok.Data;
 import lombok.AllArgsConstructor;
@@ -14,5 +15,5 @@ public class RegisterRequest {
 	private String lastName;
 	private String email;
 	private String password;
-
+	private Role role;
 }

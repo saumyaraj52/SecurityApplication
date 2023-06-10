@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,13 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtService {
 
-	private static final String SECRET_KEY="5A7134743777217A25432646294A404E635266556A586E3272357538782F413F"; 
+	@Value("${application.security.jwt.secret-key}")
+	private String secretKey;
+	@Value("${application.security.jwt.expiration}")
+	private long jwtExpiration;
+	@Value("${application.security.jwt.refresh-token.expiration}")
+	private long refreshExpiration;
+	//private static final String SECRET_KEY="5A7134743777217A25432646294A404E635266556A586E3272357538782F413F";
 	public String extractUsername(String jwt) {
 		// TODO Auto-generated method stub
 		return extractClaim(jwt,Claims::getSubject);
@@ -41,15 +48,21 @@ public class JwtService {
 	}
 	public String generateToken(UserDetails userDetails)
 	{
-		return generateToken(new HashMap<>(),userDetails);
+		return generateToken(new HashMap<>(),userDetails,jwtExpiration);
 				
 	}
 
-	public String generateToken(Map<String,Object> extraClaims,UserDetails userDetails)
+	public String generateRefreshToken(UserDetails userDetails)
+	{
+		return generateToken(new HashMap<>(),userDetails,refreshExpiration);
+
+	}
+
+	public String generateToken(Map<String,Object> extraClaims,UserDetails userDetails,long expiration)
 	{
 		return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis()+ 1000*60*24))
+				.setExpiration(new Date(System.currentTimeMillis()+ expiration))//1000*60*24))
 				.signWith(getSigningKey(),SignatureAlgorithm.HS256)
 				.compact();
 				
@@ -57,7 +70,7 @@ public class JwtService {
 	
 	private Key getSigningKey() {
 		// TODO Auto-generated method stub
-		byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
 	
